@@ -1,0 +1,159 @@
+<div style="width: 2000px; padding: 10px;">
+    <section class="section">
+        <input matInput #input class="form-control search-input" [(ngModel)]="search"
+            placeholder="Ingrese nombre de prospecto o cliente a buscar" name="search">
+        <select name="assigned_users" id="assigned_users" [(ngModel)]="assignedUserId" [disabled]="usuarios.length < 2">
+            <option *ngIf="usuarios.length > 1" value="TODOS">Todos</option>
+            <option *ngFor="let usuario of usuarios" [ngValue]="usuario.id">{{usuario.attributes.full_name}}</option>
+        </select>
+        <div class="section-button-row">
+
+            <button mat-raised-button (click)="listarProspectos()" class="button" color="primary">Buscar</button>
+            <button mat-raised-button (click)="onClickLead()" class="button" color="primary">Agregar prospecto</button>
+        </div>
+    </section>
+    <div class="pipeline-container card">
+        <h2>Captado</h2>
+        <h2>{{captados.length}}</h2>
+        <div cdkDropList id="list-captados" class="list" [cdkDropListData]="captados"
+            [cdkDropListConnectedTo]="['list-interesados', 'list-perdidos']" (cdkDropListDropped)="onDrop($event)">
+            <div cdkDrag class="box" *ngFor="let item of captados" (dblclick)="onClickLead(item.id)">
+                <div>
+                    <b>Nombre:</b>{{item.attributes.full_name}}<br>
+                    <b>Celular:</b>{{item.attributes.phone_mobile}}<br>
+                    <b>Departamento:</b>{{item.attributes.state_name}}<br>
+                    <b>¿Cómo se entero?:</b>{{item.attributes.como_entero}}<br>
+                    <b>Grado de intéres:</b>{{item.attributes.grado_interes}}<br>
+                    <b>Equipo:</b>{{item.attributes.securitygroup_name}}<br>
+                    <b>Asignado a:</b>{{item.attributes.user_full_name}}<br>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pipeline-container">
+        <h2>Interés</h2>
+        <h2>{{interesados.length}}</h2>
+        <div cdkDropList id="list-interesados" class="list" [cdkDropListData]="interesados"
+            [cdkDropListConnectedTo]="['list-captados', 'list-negociaciones', 'list-perdidos']" (cdkDropListDropped)="onDrop($event)">
+            <div class="box" *ngFor="let item of interesados" cdkDrag>
+                <div>
+                    <b>Nombre:</b>{{item.attributes.full_name}}<br>
+                    <b>Celular:</b>{{item.attributes.phone_mobile}}<br>
+                    <b>Departamento:</b>{{item.attributes.state_name}}<br>
+                    <b>¿Cómo se entero?:</b>{{item.attributes.como_entero}}<br>
+                    <b>Grado de intéres:</b>{{item.attributes.grado_interes}}<br>
+                    <b>Equipo:</b>{{item.attributes.securitygroup_name}}<br>
+                    <b>Asignado a:</b>{{item.attributes.user_full_name}}<br>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pipeline-container">
+        <h2>Negociación</h2>
+        <h2>{{negociaciones.length}}</h2>
+        <div cdkDropList id="list-negociaciones" class="list" [cdkDropListData]="negociaciones"
+            [cdkDropListConnectedTo]="['list-propuestas', 'list-perdidos']" (cdkDropListDropped)="onDrop($event)">
+            <div class="box" *ngFor="let item of negociaciones" cdkDrag>
+                <div>
+                    <b>Nombre:</b>{{item.attributes.full_name}}<br>
+                    <b>Celular:</b>{{item.attributes.phone_mobile}}<br>
+                    <b>Departamento:</b>{{item.attributes.state_name}}<br>
+                    <b>¿Cómo se entero?:</b>{{item.attributes.como_entero}}<br>
+                    <b>Grado de intéres:</b>{{item.attributes.grado_interes}}<br>
+                    <b>Equipo:</b>{{item.attributes.securitygroup_name}}<br>
+                    <b>Asignado a:</b>{{item.attributes.user_full_name}}<br>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pipeline-container">
+        <h2>Propuesta ganada</h2>
+        <h2>{{propuestas.length}}</h2>
+        <div cdkDropList id="list-propuestas" class="list" [cdkDropListData]="propuestas"
+            [cdkDropListConnectedTo]="['list-negociaciones','list-perdidos']" (cdkDropListDropped)="onDrop($event)">
+            <div class="box" *ngFor="let item of propuestas" cdkDrag>
+                <div>
+                    <b>Nombre:</b>{{item.attributes.full_name}}<br>
+                    <b>Celular:</b>{{item.attributes.phone_mobile}}<br>
+                    <b>Departamento:</b>{{item.attributes.state_name}}<br>
+                    <b>¿Cómo se entero?:</b>{{item.attributes.como_entero}}<br>
+                    <b>Grado de intéres:</b>{{item.attributes.grado_interes}}<br>
+                    <b>Equipo:</b>{{item.attributes.securitygroup_name}}<br>
+                    <b>Asignado a:</b>{{item.attributes.user_full_name}}<br>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pipeline-container">
+        <h2>Reserva</h2>
+        <h2>{{reservas.length}}</h2>
+        <div cdkDropList id="list-reservas" class="list" [cdkDropListData]="reservas"
+            (cdkDropListDropped)="onDrop($event)">
+            <div class="box" *ngFor="let item of reservas" cdkDrag>
+                <div>
+                    <b>Nombre:</b>{{item.attributes.full_name}}<br>
+                    <b>Celular:</b>{{item.attributes.phone_mobile}}<br>
+                    <b>Departamento:</b>{{item.attributes.state_name}}<br>
+                    <b>¿Cómo se entero?:</b>{{item.attributes.como_entero}}<br>
+                    <b>Grado de intéres:</b>{{item.attributes.grado_interes}}<br>
+                    <b>Equipo:</b>{{item.attributes.securitygroup_name}}<br>
+                    <b>Asignado a:</b>{{item.attributes.user_full_name}}<br>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pipeline-container">
+        <h2>Contrato</h2>
+        <h2>{{contratos.length}}</h2>
+        <div cdkDropList id="list-contratos" class="list" [cdkDropListData]="contratos"
+            (cdkDropListDropped)="onDrop($event)">
+            <div class="box" *ngFor="let item of contratos" cdkDrag>
+                <div>
+                    <b>Nombre:</b>{{item.attributes.full_name}}<br>
+                    <b>Celular:</b>{{item.attributes.phone_mobile}}<br>
+                    <b>Departamento:</b>{{item.attributes.state_name}}<br>
+                    <b>¿Cómo se entero?:</b>{{item.attributes.como_entero}}<br>
+                    <b>Grado de intéres:</b>{{item.attributes.grado_interes}}<br>
+                    <b>Equipo:</b>{{item.attributes.securitygroup_name}}<br>
+                    <b>Asignado a:</b>{{item.attributes.user_full_name}}<br>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pipeline-container">
+        <h2>Cierre ganado</h2>
+        <h2>{{ganados.length}}</h2>
+        <div cdkDropList id="list-ganados" class="list" [cdkDropListData]="ganados"
+            (cdkDropListDropped)="onDrop($event)">
+            <div class="box" *ngFor="let item of ganados" cdkDrag>
+                <div>
+                    <b>Nombre:</b>{{item.attributes.full_name}}<br>
+                    <b>Celular:</b>{{item.attributes.phone_mobile}}<br>
+                    <b>Departamento:</b>{{item.attributes.state_name}}<br>
+                    <b>¿Cómo se entero?:</b>{{item.attributes.como_entero}}<br>
+                    <b>Grado de intéres:</b>{{item.attributes.grado_interes}}<br>
+                    <b>Equipo:</b>{{item.attributes.securitygroup_name}}<br>
+                    <b>Asignado a:</b>{{item.attributes.user_full_name}}<br>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pipeline-container">
+        <h2>Cierre perdido</h2>
+        <h2>{{perdidos.length}}</h2>
+        <div cdkDropList id="list-perdidos" class="list" [cdkDropListData]="perdidos"
+            (cdkDropListDropped)="onDrop($event)">
+            <div class="box" *ngFor="let item of perdidos" cdkDrag>
+                <div>
+                    <b>Nombre:</b>{{item.attributes.full_name}}<br>
+                    <b>Celular:</b>{{item.attributes.phone_mobile}}<br>
+                    <b>Departamento:</b>{{item.attributes.state_name}}<br>
+                    <b>¿Cómo se entero?:</b>{{item.attributes.como_entero}}<br>
+                    <b>Grado de intéres:</b>{{item.attributes.grado_interes}}<br>
+                    <b>Equipo:</b>{{item.attributes.securitygroup_name}}<br>
+                    <b>Asignado a:</b>{{item.attributes.user_full_name}}<br>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

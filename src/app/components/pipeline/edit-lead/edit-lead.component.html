@@ -1,0 +1,452 @@
+<div class="hpanel">
+    <div class="panel-heading">
+
+        <h4>{{data.id ? 'EDITAR PROSPECTO' : 'NUEVO PROSPECTO'}}</h4>
+
+    </div>
+    <mat-dialog-content class="panel-body">
+        <div class="panel-body">
+            <div class="panel-body">
+                <div style="clear:both;">
+                    <h4>
+                        Datos de la persona
+                    </h4>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-12">
+                        <div class="row">
+                            <label class="col-md-2">Nombre(s):<span class="required">*</span></label>
+                            <select class="selectpicker col-md-1" name="salutation" id="salutation"
+                                [(ngModel)]="data.attributes.salutation">
+                                <option label="" value=""></option>
+                                <option label="Sr." value="Mr.">Sr.</option>
+                                <option label="Sra." value="Ms.">Sra.</option>
+                                <option label="Srta." value="Miss">Srta.</option>
+                                <option label="Dr." value="Dr.">Dr.</option>
+                                <option label="Prof." value="Prof.">Prof.</option>
+                            </select>
+                            <div class="col-md-3">
+                                <input type="text" name="first_name" id="first_name"
+                                    [(ngModel)]="data.attributes.first_name">
+                            </div>
+
+                            <label class="col-md-2">Apellido paterno: <span class="required">*</span></label>
+                            <div class="col-md-4">
+                                <input type="text" name="last_name" id="last_name"
+                                    [(ngModel)]="data.attributes.last_name">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <div class="row">
+                            <label class="col-md-2">Apellido materno:</label>
+                            <div class="col-md-4">
+                                <input type="text" name="last_name2_c" id="last_name2_c"
+                                    [(ngModel)]="data.attributes.last_name2_c">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <div class="row">
+                            <label class="col-md-3">
+                                Apellido casada:
+                            </label>
+                            <div class="col-md-8">
+                                <input type="text" name="last_name3_c" id="last_name3_c"
+                                    [(ngModel)]="data.attributes.last_name3_c">
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="data.id" class="form-group col-md-6">
+                        <div class="row">
+                            <label class="col-md-3">
+                                Cédula identidad:
+                            </label>
+                            <div class="col-md-8"><input type="text" name="numero_documento_c" id="numero_documento_c"
+                                    [(ngModel)]="data.attributes.numero_documento_c"></div>
+                        </div>
+
+                    </div>
+                    <div *ngIf="data.id" class="form-group col-md-6">
+                        <div class="row">
+                            <label class="col-md-3">
+                                Género:
+                            </label>
+                            <div class="col-md-8">
+                                <select name="genero_c" id="genero_c" [(ngModel)]="data.attributes.genero_c">
+                                    <option label="Masculino" value="MASCULINO">Masculino</option>
+                                    <option label="Femenino" value="FEMENINO">Femenino</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="data.id" class="form-group col-md-6">
+                        <div class="row">
+                            <label class="col-md-3">
+                                Cumpleaños:
+                            </label>
+                            <div class="col-md-8">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div style="clear:both;">
+                    <h4>
+                        Datos de contacto
+                    </h4>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <div class="row">
+                            <label class="col-md-3">
+                                Celular 1:
+                            </label>
+                            <div class="col-md-8">
+                                <input type="tel" name="phone_mobile" id="phone_mobile"
+                                    [(ngModel)]="data.attributes.phone_mobile">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <div class="row">
+                            <label class="col-md-3">
+                                Tiene whatsapp:
+                            </label>
+                            <div class="col-md-8">
+                                <input type="checkbox" id="tiene_whatsapp_c" name="tiene_whatsapp_c"
+                                    [(ngModel)]="data.attributes.tiene_whatsapp_c">
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="data.id" class="form-group col-md-6">
+                        <div class="row">
+                            <label class="col-md-3">
+                                Celular 2:
+                            </label>
+                            <div class="col-md-8"> <input type="tel" name="phone_work" id="phone_work"
+                                    [(ngModel)]="data.attributes.phone_work">
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="data.id" class="form-group col-md-6">
+                        <div class="row">
+                            <label class="col-md-3">
+                                Celular 3:
+                            </label>
+                            <div class="col-md-8">
+                                <input type="tel" name="phone_other" id="phone_other"
+                                    [(ngModel)]="data.attributes.phone_other">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <div class="row">
+                            <label class="col-md-3">
+                                Correo electrónico:
+                            </label>
+                            <div class="col-md-8">
+                                <input type="email" name="email1" id="email1" [(ngModel)]="data.attributes.email1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div style="clear:both;">
+                    <h4>
+                        Datos de ubicación
+                    </h4>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <div class="row">
+                            <label class="col-md-3">
+                                País:
+                            </label>
+                            <div class="col-md-8">
+                                <select type="text" name="primary_address_country" id="primary_address_country"
+                                    [(ngModel)]="data.attributes.primary_address_country"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <div class="row">
+                            <label class="col-md-3">
+                                Ciudad:
+                            </label>
+                            <div class="col-md-8">
+                                <select name="primary_address_state" id="primary_address_state"
+                                    [(ngModel)]="data.attributes.primary_address_state"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-12">
+                        <div class="row">
+                            <label class="col-md-2">
+                                Dirección:
+                            </label>
+                            <div class="col-md-9">
+                                <input type="text" name="primary_address_street" id="primary_address_street"
+                                    [(ngModel)]="data.attributes.primary_address_street">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="data.id" class="panel-body">
+                <div style="clear:both;">
+                    <h4>
+                        Datos de ocupación
+                    </h4>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <div class="row">
+                            <label class="col-md-3">
+                                Rubro:
+                            </label>
+                            <div class="col-md-8">
+                                <select name="rubro_c" id="rubro_c" [(ngModel)]="data.attributes.rubro_c">
+
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <div class="row">
+                            <label class="col-md-3">
+                                Actividad:
+                            </label>
+                            <div class="col-md-8">
+                                <input type="text" name="actividad_c" id="actividad_c"
+                                    [(ngModel)]="data.attributes.actividad_c">
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <div class="row">
+                            <label class="col-md-3">
+                                Tipo cliente:
+                            </label>
+                            <div class="col-md-8">
+                                <select name="tipo_cliente_c" id="tipo_cliente_c"
+                                    [(ngModel)]="data.attributes.tipo_cliente_c">
+                                    <option label="" value=""></option>
+                                    <option label="Persona Natural" value="NATURAL">Persona Natural</option>
+                                    <option label="Persona Juridica" value="JURIDICA">Persona Juridica</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="form-group col-md-6">
+                        <div class="row">
+                            <label class="col-md-3">
+                                NIT empresa:
+                            </label>
+                            <div class="col-md-8">
+                                <input type="text" name="empresa_nit_c" id="empresa_nit_c"
+                                    [(ngModel)]="data.attributes.empresa_nit_c">
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="form-group col-md-12">
+                        <div class="row">
+                            <label class="col-md-2">
+                                Nombre de la empresa:
+                            </label>
+                            <div class="col-md-9">
+                                <input type="text" name="empresa_nombre_c" id="empresa_nombre_c"
+                                    [(ngModel)]="data.attributes.empresa_nombre_c">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <div class="row">
+                            <label class="col-md-3">
+                                Nombre contacto:
+                            </label>
+                            <div class="col-md-8">
+                                <input type="text" name="assistant" id="assistant"
+                                    [(ngModel)]="data.attributes.assistant">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <div class="row">
+                            <label class="col-md-3">
+                                Correo empresa:
+                            </label>
+                            <div class="col-md-8">
+                                <input type="text" name="empresa_correo_c" id="empresa_correo_c"
+                                    [(ngModel)]="data.attributes.empresa_correo_c">
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="form-group col-md-6">
+                        <div class="row">
+                            <label class="col-md-3">
+                                Teléfono contacto:
+                            </label>
+                            <div class="col-md-8">
+                                <input type="tel" name="assistant_phone" id="assistant_phone"
+                                    [(ngModel)]="data.attributes.assistant_phone">
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="form-group col-md-6">
+                        <div class="row">
+                            <label class="col-md-3">
+                                Dirección empresa:
+                            </label>
+                            <div class="col-md-8">
+                                <input type="text" name="empresa_direccion_c" id="empresa_direccion_c"
+                                    [(ngModel)]="data.attributes.empresa_direccion_c">
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div style="clear:both;">
+                    <h4>
+                        Datos del prospecto
+                    </h4>
+                </div>
+                <div class="row">
+                    <div *ngIf="data.id" class="form-group col-md-6">
+                        <label>
+                            Tipo:
+                        </label>
+                        <label>
+                        </label>
+                        <select name="tipo_prospecto_c" id="tipo_prospecto_c" title="">
+                            <option label="" value=""></option>
+                        </select>
+                    </div>
+                    <div *ngIf="data.id" class="form-group col-md-6">
+                        <label>
+                            Fecha válidez:
+                        </label>
+                        <label>
+                        </label>
+                        <span class="dateTime">
+                            <table border="0">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <input class="date_input" autocomplete="off" type="text"
+                                                name="fecha_validez_c" id="fecha_validez_c" value="01-01-2000" title=""
+                                                tabindex="0" size="11" maxlength="10">
+                                        </td>
+                                        <td>
+                                            <img src="themes/sp_theme/images/jscalendar.gif?v=uyEyAzAlxadABy9FLJvq6Q"
+                                                alt="Introducir Fecha" style=" padding-left:6px" border="0"
+                                                id="fecha_validez_c_trigger">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </span>
+                        <script type="text/javascript">
+                            Calendar.setup({
+                                inputField: "fecha_validez_c",
+                                form: "EditView",
+                                ifFormat: "%d-%m-%Y %H:%M",
+                                daFormat: "%d-%m-%Y %H:%M",
+                                button: "fecha_validez_c_trigger",
+                                singleClick: true,
+                                dateStr: "01-01-2000",
+                                startWeekday: 0,
+                                step: 1,
+                                weekNumbers: false
+                            }
+                            );
+                        </script>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <div class="row">
+                            <label class="col-md-3">
+                                ¿Cómo llego?:
+                            </label>
+                            <div class="col-md-8">
+                                <select name="lead_source" id="lead_source" title="">
+                                    <option label="" value=""></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <div class="row">
+                            <label class="col-md-3">
+                                ¿Cómo se entero?:
+                            </label>
+                            <div class="col-md-8">
+                                <select name="lead_source2_c" id="lead_source2_c" title="">
+                                    <option label="" value=""></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="data.id" class="form-group col-md-6">
+                        <label>
+                            Etapa:
+                        </label>
+                        <label>
+                        </label>
+                        <select name="etapa_c" id="etapa_c" title="">
+                            <option label="Captado" value="CAPTADO">Captado</option>
+                            <option label="Interés" value="INTERES">Interés</option>
+                            <option label="Cierre perdido" value="CIERRE_PERDIDO">Cierre perdido</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div style="clear:both;">
+                    <h4>
+                        Asignar prospecto
+                    </h4>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-12">
+                        <div class="row">
+                            <label class="col-md-2">
+                                Asignado a:
+                            </label>
+                            <div class="col-md-9">
+                                <select name="assigned_user_id" id="assigned_user_id" title="">
+                                    <option label="" value=""></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="buttons" style="text-align: center;">
+                <div class="action_buttons">
+                    <button class="button primary" (click)="onClickGuardar()" type="button"
+                        id="SAVE_FOOTER">Guardar</button>
+
+                    <button class="button" (click)="onClickCancelar()" type="button"
+                        id="CANCEL_FOOTER">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </mat-dialog-content>
+</div>
