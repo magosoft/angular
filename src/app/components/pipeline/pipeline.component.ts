@@ -7,13 +7,14 @@ import { RecordBean } from 'src/app/models/record-bean';
 import Swal from 'sweetalert2';
 import { EditLeadComponent } from './edit-lead/edit-lead.component';
 import { environment } from 'src/environments/environment';
+import { AuthService } from 'src/app/services/auth.service';
 
 
 @Component({
   selector: 'app-pipeline',
   templateUrl: './pipeline.component.html',
   styleUrls: ['./pipeline.component.scss'],
-  providers: [ComunService, SuiteCrmService]
+  providers: [ComunService, SuiteCrmService, AuthService]
 })
 export class PipelineComponent implements OnInit {
 
@@ -26,12 +27,14 @@ export class PipelineComponent implements OnInit {
   public ganados: RecordBean[];
   public perdidos: RecordBean[];
   public usuarios: RecordBean[];
+  public usuarioLogueado: RecordBean;
   public search: string;
-  public userId: string;
   public assignedUserId: string;
+
   constructor(
     public _serv: ComunService,
     private _crm: SuiteCrmService,
+    private _auth: AuthService,
     public dialog: MatDialog) {
     this.captados = [];
     this.interesados = [];
@@ -42,16 +45,20 @@ export class PipelineComponent implements OnInit {
     this.ganados = [];
     this.perdidos = [];
     this.usuarios = [];
+    this.usuarioLogueado = { type: 'User' };
     this.search = '';
-    this.userId = '';
     this.assignedUserId = '';
+
   }
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.userId = document.getElementById('ng_user_id')?.getAttribute('value') ?? '';
-      this.assignedUserId = this.userId;
-      this.listarUsuarios();
+      this._auth.currentUser().subscribe(user => {
+        this.usuarioLogueado = user;
+        this.listarUsuarios();
+      });
+
+
     }, 10);
   }
 
@@ -77,7 +84,7 @@ export class PipelineComponent implements OnInit {
     }
   }
 
-  async onClickLead(id?: string) {
+  onClickLead(id?: string) {
     if (id) {
       this._crm.generateToken().subscribe({
         next: () => {
@@ -94,12 +101,41 @@ export class PipelineComponent implements OnInit {
     } else {
       this.openDialogLead({
         type: 'Lead', attributes: {
-          modified_user_id: this.userId,
-          created_by: this.userId,
-          assigned_user_id: this.userId,
+          modified_user_id: this.usuarioLogueado.id,
+          created_by: this.usuarioLogueado.id,
+          assigned_user_id: this.usuarioLogueado.id,
           etapa_c: environment.etapas[0],
           status: environment.status[0],
-          status_description: 'Asignado por PIPELINE' 
+          status_description: 'Asignado por PIPELINE',
+          SecurityGroups: this.usuarioLogueado.attributes.securitygroup_id
+        }
+      });
+    }
+  }
+  onClickOpportunity(id?: string) {
+    if (id) {
+      this._crm.generateToken().subscribe({
+        next: () => {
+          this._crm.getModuleByID('Opportunities', id).subscribe({
+            next: (result: any) => {
+              this.openDialogLead(result.data);
+            },
+            error: (e) => {
+              this.showError(e);
+            }
+          });
+        }
+      });
+    } else {
+      this.openDialogLead({
+        type: 'Opportunity', attributes: {
+          modified_user_id: this.usuarioLogueado.id,
+          created_by: this.usuarioLogueado.id,
+          assigned_user_id: this.usuarioLogueado.id,
+          etapa_c: environment.etapas[0],
+          status: environment.status[0],
+          status_description: 'Asignado por PIPELINE',
+         
         }
       });
     }
@@ -118,7 +154,7 @@ export class PipelineComponent implements OnInit {
                   console.log(r);
                 }
               });
-            } else {
+            } else {           
               this._crm.createModuleRecord(result).subscribe({
                 next: (r) => {
                   console.log(r);
@@ -153,10 +189,10 @@ export class PipelineComponent implements OnInit {
   }
 
   listarUsuarios(): void {
-    this._serv.listarUsuarios(this.userId).subscribe({
+    this._serv.listarUsuarios(this.usuarioLogueado.id).subscribe({
       next: (result: any) => {
         this.usuarios = result.data;
-        this.listarProspectos();
+        this.updatePipeline();
       },
       error: (e) => {
         Swal.fire({
@@ -170,8 +206,9 @@ export class PipelineComponent implements OnInit {
       }
     });
   }
-  listarProspectos(): void {
-    this._serv.listarProspectos(this.userId, this.assignedUserId, this.search).subscribe({
+
+  updatePipeline(): void {
+    this._serv.listarRegistrosPipeline(this.usuarioLogueado.id, this.assignedUserId, this.search).subscribe({
       next: (result: any) => {
         this.captados = result.data.filter((o: RecordBean) => o.attributes.etapa_c == environment.etapas[0]);
         this.interesados = result.data.filter((o: RecordBean) => o.attributes.etapa_c == environment.etapas[1]);

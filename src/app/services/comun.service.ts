@@ -6,8 +6,9 @@ import { RecordBean } from '../models/record-bean';
 
 @Injectable()
 export class ComunService {
+
   constructor(private _http: HttpClient) { }
-  listarUsuarios(userId: string) {
+  listarUsuarios(userId: string = '') {
     return this._http.get(environment.urlIndex, {
       params: {
         entryPoint: 'Call_SP_EntryPoint',
@@ -17,11 +18,11 @@ export class ComunService {
       }
     });
   }
-  listarProspectos(userId: string, assignedUserId: string, nombre: string) {
+  listarRegistrosPipeline(userId: string = '', assignedUserId: string = '', nombre: string = '') {
     return this._http.get(environment.urlIndex, {
       params: {
         entryPoint: 'Call_SP_EntryPoint',
-        action: 'listar_prospectos',
+        action: 'listar_registros_pipeline',
         len: 3,
         param1: userId,
         param2: assignedUserId,

@@ -37,16 +37,22 @@ export class SuiteCrmService {
   deleteModuleRecord(moduleName: string, id: string) {
     return this._http.patch<any>(environment.urlApi + '/' + moduleName + '/' + id, { headers: { Authorization: this.access_token } });
   }
+  //POST {{suitecrm.url}}/Api/V8/module/{moduleName}/relationships
+  createRelationship(moduleName: string, id: string, record: RecordBean) {
+    return this._http.post<any>(environment.urlApi + '/' + moduleName + '/' + id + '/relationships', { data: this.copiar(record) }, { headers: { Authorization: this.access_token } });
+  }
   copiar(record: RecordBean): any {
     let data = { type: record.type, attributes: {} };
     if (record.id) {
       Object.defineProperty(data, 'id', { value: record.id, enumerable: true });
     }
-    for (let [key, value] of Object.entries(record.attributes)) {
-      if (value) {
-        Object.defineProperty(data.attributes, key, { value: value, enumerable: true });
+    if(record.attributes){
+      for (let [key, value] of Object.entries(record.attributes)) {
+        if (value) {
+          Object.defineProperty(data.attributes, key, { value: value, enumerable: true });
+        }
       }
-    }
+    }   
     return data;
   }
 
