@@ -12,6 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { EditLeadComponent } from './components/pipeline/edit-lead/edit-lead.component';
 import { EditOpportunityComponent } from './components/pipeline/edit-opportunity/edit-opportunity.component';
 import { SpinnerOverlayComponent } from './components/spinner-overlay/spinner-overlay.component';
+import {MatTableModule} from '@angular/material/table';
 @NgModule({
   declarations: [
     AppComponent,
@@ -29,6 +30,7 @@ import { SpinnerOverlayComponent } from './components/spinner-overlay/spinner-ov
     MatButtonModule,
     MatInputModule,
     DragDropModule,
+    MatTableModule
   ],
   providers: [],
   bootstrap: [AppComponent]

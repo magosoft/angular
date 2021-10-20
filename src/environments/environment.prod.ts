@@ -2,6 +2,8 @@ export const environment = {
   production: true,
   urlIndex: 'https://dev-crm.elpahuichi.com.bo/index.php',
   urlApi: 'https://dev-crm.elpahuichi.com.bo/Api/V8/module',
+  urlApi100: 'https://apis100.grupo-lafuente.com/api-sap/v2',
+  apikey100: 'xicYGFamJFPIn8FjL4Dyxs6oqliyiwBi',
   auth: {
     url: 'https://dev-crm.elpahuichi.com.bo/Api/access_token',
     credential: {

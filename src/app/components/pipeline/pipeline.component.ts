@@ -4,10 +4,12 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/dr
 import { ComunService } from 'src/app/services/comun.service';
 import { SuiteCrmService } from 'src/app/services/suite-crm.service';
 import { RecordBean } from 'src/app/models/record-bean';
-import Swal from 'sweetalert2';
 import { EditLeadComponent } from './edit-lead/edit-lead.component';
 import { environment } from 'src/environments/environment';
 import { AuthService } from 'src/app/services/auth.service';
+import { formatDate } from '@angular/common';
+import Swal from 'sweetalert2';
+import { SpinnerOverlayService } from 'src/app/services/spinner-overlay.service';
 
 
 @Component({
@@ -35,6 +37,7 @@ export class PipelineComponent implements OnInit {
     public _serv: ComunService,
     private _crm: SuiteCrmService,
     private _auth: AuthService,
+    private _spin: SpinnerOverlayService,
     public dialog: MatDialog) {
     this.captados = [];
     this.interesados = [];
@@ -45,29 +48,30 @@ export class PipelineComponent implements OnInit {
     this.ganados = [];
     this.perdidos = [];
     this.usuarios = [];
-    this.usuarioLogueado = { type: 'User' };
+    this.usuarioLogueado = { type: 'User', attributes: {} };
     this.search = '';
-    this.assignedUserId = '';
+    this.assignedUserId = 'TODOS';
 
   }
 
   ngOnInit(): void {
     setTimeout(() => {
+      this._spin.show();
       this._auth.currentUser().subscribe(user => {
+        this._spin.hide();
         this.usuarioLogueado = user;
         this.listarUsuarios();
       });
-
-
-    }, 10);
+    });
   }
 
   onDrop(event: CdkDragDrop<RecordBean[]>): void {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
+      let elem = event.previousContainer.data[event.previousIndex];
       if (event.previousContainer.id == 'list-captados' && event.container.id == 'list-interesados') {
-        this.validarTieneTareas(event);
+        this.cambiarEtapaInteres(elem.id);
       }
       if (event.previousContainer.id == 'list-captados' && event.container.id == 'list-perdidos') {
         this.openDialogCierrePerdido(event);
@@ -83,17 +87,44 @@ export class PipelineComponent implements OnInit {
       }
     }
   }
-
+  onShowError(err: any): void {
+    Swal.fire({
+      width: '350px',
+      icon: 'error',
+      title: err.error ? err.error.error : 'Error desconocido',
+      text: err.error ? err.error.message : 'Error servicio!',
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'Cerrar'
+    });
+  }
+  onShowWarning(text: string = ''): void {
+    Swal.fire({
+      width: '350px',
+      icon: 'warning',
+      text: text,
+      showConfirmButton: false,
+      timer: 3000
+    });
+  }
+  onShowSuccess(text: string = ''): void {
+    Swal.fire({
+      width: '350px',
+      icon: 'success',
+      text: text,
+      showConfirmButton: false,
+      timer: 3000
+    });
+  }
   onClickLead(id?: string) {
     if (id) {
       this._crm.generateToken().subscribe({
         next: () => {
           this._crm.getModuleByID('Leads', id).subscribe({
-            next: (result: any) => {
-              this.openDialogLead(result.data);
+            next: (result: RecordBean) => {
+              this.openDialogLead(result);
             },
             error: (e) => {
-              this.showError(e);
+              this.onShowError(e);
             }
           });
         }
@@ -104,10 +135,12 @@ export class PipelineComponent implements OnInit {
           modified_user_id: this.usuarioLogueado.id,
           created_by: this.usuarioLogueado.id,
           assigned_user_id: this.usuarioLogueado.id,
+          primary_address_country: 'BO',
+          primary_address_state: '03',
+          tipo_prospecto_c: 'NORMAL',
           etapa_c: environment.etapas[0],
           status: environment.status[0],
           status_description: 'Asignado por PIPELINE',
-          SecurityGroups: this.usuarioLogueado.attributes.securitygroup_id
         }
       });
     }
@@ -117,17 +150,17 @@ export class PipelineComponent implements OnInit {
       this._crm.generateToken().subscribe({
         next: () => {
           this._crm.getModuleByID('Opportunities', id).subscribe({
-            next: (result: any) => {
-              this.openDialogLead(result.data);
+            next: (result: RecordBean) => {
+              //this.openDialogOpportunity(result);
             },
             error: (e) => {
-              this.showError(e);
+              this.onShowError(e);
             }
           });
         }
       });
     } else {
-      this.openDialogLead({
+      /*this.openDialogOpportunity({
         type: 'Opportunity', attributes: {
           modified_user_id: this.usuarioLogueado.id,
           created_by: this.usuarioLogueado.id,
@@ -135,9 +168,9 @@ export class PipelineComponent implements OnInit {
           etapa_c: environment.etapas[0],
           status: environment.status[0],
           status_description: 'Asignado por PIPELINE',
-         
+
         }
-      });
+      });*/
     }
   }
   openDialogLead(data: RecordBean) {
@@ -148,16 +181,21 @@ export class PipelineComponent implements OnInit {
       if (result) {
         this._crm.generateToken().subscribe({
           next: () => {
+            if (result.attributes.fecha_validez_c) {
+              result.attributes.fecha_validez_c = formatDate(result.attributes.fecha_validez_c, 'yyyy-MM-dd', 'en-GB');
+            }
             if (result.id) {
               this._crm.updateModuleRecord(result).subscribe({
                 next: (r) => {
-                  console.log(r);
+                  this.updatePipeline();
+                  this.onShowSuccess('Prospecto registrado exitosamente.');
                 }
               });
-            } else {           
+            } else {
               this._crm.createModuleRecord(result).subscribe({
                 next: (r) => {
-                  console.log(r);
+                  this.updatePipeline();
+                  this.onShowSuccess('Prospecto registrado exitosamente.');
                 }
               });
             }
@@ -189,56 +227,74 @@ export class PipelineComponent implements OnInit {
   }
 
   listarUsuarios(): void {
+    this._spin.show();
     this._serv.listarUsuarios(this.usuarioLogueado.id).subscribe({
-      next: (result: any) => {
-        this.usuarios = result.data;
+      next: (result: RecordBean[]) => {
+        this._spin.hide();
+        this.usuarios = result;
+        if(this.usuarios.length == 1){
+          this.assignedUserId = this.usuarios[0].id ?? 'TODOS';
+        }
         this.updatePipeline();
       },
       error: (e) => {
-        Swal.fire({
-          width: '350px',
-          icon: 'error',
-          title: e.error ? e.error.error : 'Error desconocido',
-          text: e.error ? e.error.message : 'Error servicio!',
-          confirmButtonColor: '#3085d6',
-          confirmButtonText: 'Cerrar'
-        });
+        this._spin.hide();
+        this.onShowError(e);
       }
     });
   }
 
   updatePipeline(): void {
+    this._spin.show();
     this._serv.listarRegistrosPipeline(this.usuarioLogueado.id, this.assignedUserId, this.search).subscribe({
-      next: (result: any) => {
-        this.captados = result.data.filter((o: RecordBean) => o.attributes.etapa_c == environment.etapas[0]);
-        this.interesados = result.data.filter((o: RecordBean) => o.attributes.etapa_c == environment.etapas[1]);
-        this.negociaciones = result.data.filter((o: RecordBean) => o.attributes.etapa_c == environment.etapas[2]);
-        this.propuestas = result.data.filter((o: RecordBean) => o.attributes.etapa_c == environment.etapas[3]);
-        this.reservas = result.data.filter((o: RecordBean) => o.attributes.etapa_c == environment.etapas[4]);
-        this.contratos = result.data.filter((o: RecordBean) => o.attributes.etapa_c == environment.etapas[5]);
-        this.ganados = result.data.filter((o: RecordBean) => o.attributes.etapa_c == environment.etapas[6]);
-        this.perdidos = result.data.filter((o: RecordBean) => o.attributes.etapa_c == environment.etapas[7]);
+      next: (result: RecordBean[]) => {
+        this._spin.hide();
+        if (result.length > 0) {
+          this.captados = result.filter((o: RecordBean) => o.attributes.etapa_c == environment.etapas[0]);
+          this.interesados = result.filter((o: RecordBean) => o.attributes.etapa_c == environment.etapas[1]);
+          this.negociaciones = result.filter((o: RecordBean) => o.attributes.etapa_c == environment.etapas[2]);
+          this.propuestas = result.filter((o: RecordBean) => o.attributes.etapa_c == environment.etapas[3]);
+          this.reservas = result.filter((o: RecordBean) => o.attributes.etapa_c == environment.etapas[4]);
+          this.contratos = result.filter((o: RecordBean) => o.attributes.etapa_c == environment.etapas[5]);
+          this.ganados = result.filter((o: RecordBean) => o.attributes.etapa_c == environment.etapas[6]);
+          this.perdidos = result.filter((o: RecordBean) => o.attributes.etapa_c == environment.etapas[7]);
+        } else {
+          this.onShowWarning('No se encontraron resultados para su criterio de búsqueda.');
+        }
       },
       error: (e) => {
-        Swal.fire({
-          width: '350px',
-          icon: 'error',
-          title: e.error ? e.error.error : 'Error desconocido',
-          text: e.error ? e.error.message : 'Error servicio!',
-          confirmButtonColor: '#3085d6',
-          confirmButtonText: 'Cerrar'
-        });
+        this._spin.hide();
+        this.onShowError(e);
       }
     });
   }
 
-  validarTieneTareas(event: CdkDragDrop<RecordBean[]>): void {
-    let elem = event.previousContainer.data[event.previousIndex];
-    this._serv.listarTareas(elem.id).subscribe({
-      next: (result) => {
+  cambiarEtapaInteres(id = ''): void {
+    this._spin.show();
+    this._serv.listarTareasExitosas(id).subscribe({
+      next: (result: RecordBean[]) => {
         if (result.length > 0) {
-          this.cambiarEtapaInteres(event);
+          this._crm.generateToken().subscribe({
+            next: () => {
+              this._crm.updateModuleRecord({ id: id, type: 'Leads', attributes: { etapa_c: environment.etapas[1] } }).subscribe({
+                next: (res: RecordBean) => {
+                  this._spin.hide();
+                  this.onShowSuccess(res.attributes.full_name + ' avanzó a la etapa Interés.');
+                  this.updatePipeline();
+                },
+                error: (e) => {
+                  this._spin.hide();
+                  this.onShowError(e);
+                }
+              });
+            },
+            error: (e) => {
+              this._spin.hide();
+              this.onShowError(e);
+            }
+          });
         } else {
+          this._spin.hide();
           Swal.fire({
             icon: 'error',
             text: 'Debe realizar al menos una tarea exitosa para avanzar.',
@@ -248,73 +304,10 @@ export class PipelineComponent implements OnInit {
         }
       },
       error: (e) => {
-        Swal.fire({
-          width: '350px',
-          icon: 'error',
-          title: e.error ? e.error.error : 'Error desconocido',
-          text: e.error ? e.error.message : 'Error servicio!',
-          confirmButtonColor: '#3085d6',
-          confirmButtonText: 'Cerrar'
-        });
+        this._spin.hide();
+        this.onShowError(e);
       }
     });
   }
 
-  tokenEtapaInteres(event: CdkDragDrop<RecordBean[]>) {
-    /*this._token.conectar().subscribe({
-      next: (result) => {
-        this.cambiarEtapaInteres(event, result.access_token);
-      },
-      error: (e) => {
-        Swal.fire({
-          width: '350px',
-          icon: 'error',
-          title: e.error ? e.error.error : 'Error desconocido',
-          text: e.error ? e.error.message : 'Error servicio!',
-          confirmButtonColor: '#3085d6',
-          confirmButtonText: 'Cerrar'
-        });
-      }
-    });*/
-  }
-
-  cambiarEtapaInteres(event: CdkDragDrop<RecordBean[]>) {
-    this._crm.generateToken().subscribe({
-      next: () => {
-        let bean = event.previousContainer.data[event.previousIndex];
-
-        this._crm.updateModuleRecord({ id: bean.id, type: 'Leads', attributes: { etapa_c: '' } });
-      }
-    });
-    /*let elem = event.previousContainer.data[event.previousIndex];
-    elem.etapa_c = 'INTERES';
-    this._crm.modificarEtapaProspecto(elem, token).subscribe({
-      next: (result) => {
-        transferArrayItem(event.previousContainer.data,
-          event.container.data,
-          event.previousIndex,
-          0);
-      },
-      error: (e) => {
-        Swal.fire({
-          width: '350px',
-          icon: 'error',
-          title: e.error ? e.error.error : 'Error desconocido',
-          text: e.error ? e.error.message : 'Error servicio!',
-          confirmButtonColor: '#3085d6',
-          confirmButtonText: 'Cerrar'
-        });
-      }
-    });*/
-  }
-  showError(e: any): void {
-    Swal.fire({
-      width: '350px',
-      icon: 'error',
-      title: e.error ? e.error.error : 'Error desconocido',
-      text: e.error ? e.error.message : 'Error servicio!',
-      confirmButtonColor: '#3085d6',
-      confirmButtonText: 'Cerrar'
-    });
-  }
 }

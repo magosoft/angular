@@ -10,7 +10,7 @@ import { RecordBean } from '../models/record-bean';
 export class AuthService {
   private user: RecordBean;
   constructor(private _http: HttpClient) {
-    this.user = { type: 'User' };
+    this.user = { type: 'User', attributes: {} };
   }
   currentUser(): Observable<RecordBean> {
     if (this.user.id) {
@@ -26,11 +26,10 @@ export class AuthService {
           len: 1,
           param1: userId
         }
-      }).pipe(tap((result: any) => {
-        if(result.data && result.data.length > 0){
+      }).pipe(map((result: any) => {
+        if (result.data && result.data.length > 0) {
           this.user = result.data[0];
-        }       
-      }), map((val: RecordBean) => {
+        }
         return this.user;
       }));
     }
